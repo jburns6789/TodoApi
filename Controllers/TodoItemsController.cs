@@ -22,14 +22,16 @@ namespace TodoApi.Controllers
 
         // GET: api/TodoItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
-            return await _context.TodoItems.ToListAsync();
+            return await _context.TodoItems
+                .Select(x => ItemToDTO(x))
+                .ToListAsync();
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -38,7 +40,7 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            return todoItem;
+            return ItemToDTO(todoItem);
         }
 
         // PUT: api/TodoItems/5
