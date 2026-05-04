@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
+
+//async/await is best practice to allow for scalining w/ DB calls
 
 namespace TodoApi.Controllers
 {
@@ -15,7 +18,7 @@ namespace TodoApi.Controllers
     {
         private readonly TodoContext _context;
 
-        public TodoItemsController(TodoContext context)
+        public TodoItemsController(TodoContext context) //Dependency Injection
         {
             _context = context;
         }
@@ -63,6 +66,9 @@ namespace TodoApi.Controllers
             
             todoItem.Name = todoDTO.Name;
             todoItem.IsComplete = todoDTO.IsComplete;
+
+            //handles case where two users might update an item at the 
+            //time
 
             try
             {
@@ -117,6 +123,8 @@ namespace TodoApi.Controllers
             return _context.TodoItems.Any(e => e.Id == id);
         }
 
+
+        //TodoItem isnt exposed directly because of this pattern
         private static TodoItemDTO ItemToDTO(TodoItem todoItem) => 
             new TodoItemDTO
             {
